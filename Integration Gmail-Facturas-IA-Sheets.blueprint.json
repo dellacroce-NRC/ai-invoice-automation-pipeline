@@ -1,0 +1,2070 @@
+{
+    "name": "Integration Gmail-Facturas-IA-Sheets",
+    "flow": [
+        {
+            "id": 1,
+            "module": "google-email:triggerWatchNewEmails",
+            "version": 4,
+            "parameters": {
+                "from": "",
+                "size": {
+                    "unit": "M",
+                    "amount": null,
+                    "criteria": "larger"
+                },
+                "limit": 1,
+                "folder": "INBOX",
+                "format": "full",
+                "subject": "factura",
+                "criteria": "all",
+                "markSeen": false,
+                "filterType": "simpleSearch",
+                "__IMTCONN__": 4327339,
+                "excludeWords": "",
+                "includeWords": "",
+                "hasAttachment": true
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": -317,
+                    "y": -68
+                },
+                "restore": {
+                    "parameters": {
+                        "size": {
+                            "nested": {
+                                "unit": {
+                                    "label": "MB (megabytes)"
+                                },
+                                "criteria": {
+                                    "label": "Greater than"
+                                }
+                            }
+                        },
+                        "folder": {
+                            "label": "Inbox"
+                        },
+                        "format": {
+                            "label": "Full content"
+                        },
+                        "criteria": {
+                            "label": "All messages"
+                        },
+                        "filterType": {
+                            "label": "Simple filter"
+                        },
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-email"
+                            },
+                            "label": "My Gmail connection (dellacroce.pd@gmail.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-email",
+                        "label": "Connection",
+                        "required": true
+                    },
+                    {
+                        "name": "filterType",
+                        "type": "select",
+                        "label": "Filter type",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "simpleSearch",
+                                "gmailSearch"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "format",
+                        "type": "select",
+                        "label": "Content format",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "full",
+                                "raw",
+                                "metadata",
+                                "minimal"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "folder",
+                        "type": "select",
+                        "label": "Folder",
+                        "required": true
+                    },
+                    {
+                        "name": "labelIds",
+                        "type": "select",
+                        "label": "Label"
+                    },
+                    {
+                        "name": "criteria",
+                        "type": "select",
+                        "label": "Criteria",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "all",
+                                "is:read",
+                                "is:unread"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "markSeen",
+                        "type": "boolean",
+                        "label": "Mark email message(s) as read when fetched"
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit",
+                        "required": true,
+                        "validate": {
+                            "max": 500
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "type": "email",
+                        "label": "Sender email address"
+                    },
+                    {
+                        "name": "subject",
+                        "type": "text",
+                        "label": "Subject"
+                    },
+                    {
+                        "name": "includeWords",
+                        "type": "text",
+                        "label": "Has the words"
+                    },
+                    {
+                        "name": "excludeWords",
+                        "type": "text",
+                        "label": "Doesn't have"
+                    },
+                    {
+                        "name": "size",
+                        "spec": [
+                            {
+                                "name": "criteria",
+                                "type": "select",
+                                "label": "Criteria",
+                                "validate": {
+                                    "enum": [
+                                        "larger",
+                                        "smaller"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "amount",
+                                "type": "integer",
+                                "label": "Size",
+                                "validate": {
+                                    "min": 0
+                                }
+                            },
+                            {
+                                "name": "unit",
+                                "type": "select",
+                                "label": "Size unit",
+                                "validate": {
+                                    "enum": [
+                                        "M",
+                                        "K",
+                                        "bytes"
+                                    ]
+                                }
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Email size"
+                    },
+                    {
+                        "name": "hasAttachment",
+                        "type": "boolean",
+                        "label": "Only emails with attachments/media",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "id",
+                        "type": "text",
+                        "label": "Message ID"
+                    },
+                    {
+                        "name": "threadId",
+                        "type": "text",
+                        "label": "Thread ID"
+                    },
+                    {
+                        "name": "internalDate",
+                        "type": "date",
+                        "label": "Date"
+                    },
+                    {
+                        "name": "subject",
+                        "type": "text",
+                        "label": "Subject",
+                        "condition": true
+                    },
+                    {
+                        "name": "fromName",
+                        "type": "text",
+                        "label": "From (name)",
+                        "condition": true
+                    },
+                    {
+                        "name": "fromEmail",
+                        "type": "text",
+                        "label": "From (email)",
+                        "condition": true
+                    },
+                    {
+                        "name": "to",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name"
+                                },
+                                {
+                                    "name": "email",
+                                    "type": "text",
+                                    "label": "Email"
+                                }
+                            ],
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "To",
+                        "condition": true
+                    },
+                    {
+                        "name": "cc",
+                        "spec": [
+                            {
+                                "name": "email",
+                                "type": "email",
+                                "label": "Email"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Name"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "CC",
+                        "condition": true
+                    },
+                    {
+                        "name": "bcc",
+                        "spec": [
+                            {
+                                "name": "email",
+                                "type": "email",
+                                "label": "Email"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Name"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "BCC",
+                        "condition": true
+                    },
+                    {
+                        "name": "snippet",
+                        "type": "text",
+                        "label": "Snippet"
+                    },
+                    {
+                        "name": "fullTextBody",
+                        "type": "text",
+                        "label": "Full text body",
+                        "condition": true
+                    },
+                    {
+                        "name": "htmlBody",
+                        "type": "text",
+                        "label": "HTML body",
+                        "condition": true
+                    },
+                    {
+                        "name": "hasAttachment",
+                        "type": "boolean",
+                        "label": "Has attachment",
+                        "condition": true
+                    },
+                    {
+                        "name": "hasMedia",
+                        "type": "boolean",
+                        "label": "Has media",
+                        "condition": true
+                    },
+                    {
+                        "name": "sysFolders",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "System folder ID"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "System folder name"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "System folders"
+                    },
+                    {
+                        "name": "categoryFolders",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "Category folder ID"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Category folder name"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Category folders"
+                    },
+                    {
+                        "name": "userLabelFolders",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "User label folder ID"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "User label folder name"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "User label folders"
+                    },
+                    {
+                        "name": "labelIds",
+                        "spec": {
+                            "type": "text"
+                        },
+                        "type": "array",
+                        "label": "Message folder IDs"
+                    },
+                    {
+                        "name": "headers",
+                        "spec": [
+                            {
+                                "name": "Delivered-To",
+                                "type": "text",
+                                "label": "Delivered-To"
+                            },
+                            {
+                                "name": "Received",
+                                "type": "text",
+                                "label": "Received"
+                            },
+                            {
+                                "name": "Date",
+                                "type": "text",
+                                "label": "Date (header)"
+                            },
+                            {
+                                "name": "X-Original-Sender",
+                                "type": "text"
+                            },
+                            {
+                                "name": "Reply-To",
+                                "type": "text"
+                            },
+                            {
+                                "name": "Subject",
+                                "type": "text",
+                                "label": "Subject"
+                            },
+                            {
+                                "name": "From",
+                                "type": "text",
+                                "label": "From"
+                            },
+                            {
+                                "name": "To",
+                                "type": "text",
+                                "label": "To"
+                            },
+                            {
+                                "name": "Message-ID",
+                                "type": "text",
+                                "label": "Message-ID"
+                            },
+                            {
+                                "name": "In-Reply-To",
+                                "type": "text",
+                                "label": "In-Reply-To"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Headers",
+                        "condition": true
+                    },
+                    {
+                        "name": "sizeEstimate",
+                        "type": "number",
+                        "label": "Size estimate"
+                    },
+                    {
+                        "name": "historyId",
+                        "type": "text",
+                        "label": "History ID"
+                    }
+                ],
+                "advanced": true
+            }
+        },
+        {
+            "id": 3,
+            "module": "google-email:listEmailAttachments",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": 4327339
+            },
+            "mapper": {
+                "include": [
+                    "attachment",
+                    "media"
+                ],
+                "messageId": "{{1.id}}",
+                "returnAttachmentData": true
+            },
+            "metadata": {
+                "designer": {
+                    "x": 43,
+                    "y": -68
+                },
+                "restore": {
+                    "expect": {
+                        "include": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-email"
+                            },
+                            "label": "My Gmail connection (dellacroce.pd@gmail.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-email",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "messageId",
+                        "type": "text",
+                        "label": "Message ID",
+                        "required": true
+                    },
+                    {
+                        "name": "include",
+                        "type": "select",
+                        "label": "Include",
+                        "multiple": true,
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "attachment",
+                                "media"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "returnAttachmentData",
+                        "type": "boolean",
+                        "label": "Return media or attachment file data",
+                        "required": true
+                    }
+                ],
+                "advanced": true
+            }
+        },
+        {
+            "id": 5,
+            "module": "google-drive:uploadAFile",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": 4328494
+            },
+            "mapper": {
+                "data": "{{3.data}}",
+                "select": "value",
+                "convert": false,
+                "filename": "{{3.filename}}",
+                "folderId": "/16Fq39tgpFI_MS9pbsEL-POFy5z-ooyuW",
+                "destination": "drive"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 336,
+                    "y": -65
+                },
+                "restore": {
+                    "expect": {
+                        "select": {
+                            "label": "Select from the list"
+                        },
+                        "folderId": {
+                            "mode": "chose",
+                            "path": [
+                                "Facturas Almacenadas"
+                            ]
+                        },
+                        "destination": {
+                            "label": "My Drive"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-restricted"
+                            },
+                            "label": "coneccion make a drive (dellacroce.pd@gmail.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-restricted",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "select",
+                        "type": "select",
+                        "label": "Enter a Folder ID",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "map",
+                                "value"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "title",
+                        "type": "text",
+                        "label": "New File Name"
+                    },
+                    {
+                        "name": "filename",
+                        "type": "text",
+                        "label": "File Name",
+                        "required": true
+                    },
+                    {
+                        "name": "data",
+                        "type": "buffer",
+                        "label": "Data",
+                        "required": true
+                    },
+                    {
+                        "name": "convert",
+                        "type": "boolean",
+                        "label": "Convert a File",
+                        "required": true
+                    },
+                    {
+                        "name": "destination",
+                        "type": "select",
+                        "label": "New Drive Location",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share",
+                                "team"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "folderId",
+                        "type": "folder",
+                        "label": "New Folder Location",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        {
+            "id": 7,
+            "module": "gemini-ai:uploadAFile",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 4326550
+            },
+            "mapper": {
+                "file_data": "{{3.data}}",
+                "file_name": "{{3.filename}}",
+                "useFileSearchStore": false
+            },
+            "metadata": {
+                "designer": {
+                    "x": 656,
+                    "y": -66
+                },
+                "restore": {
+                    "expect": {
+                        "useFileSearchStore": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "gemini-ai-q9zyjp"
+                            },
+                            "label": "gemini Make"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:gemini-ai-q9zyjp",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "file_name",
+                        "type": "text",
+                        "label": "Name",
+                        "required": true
+                    },
+                    {
+                        "name": "file_data",
+                        "type": "buffer",
+                        "label": "Data",
+                        "required": true
+                    },
+                    {
+                        "name": "useFileSearchStore",
+                        "type": "boolean",
+                        "label": "Use File Search Store"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 8,
+            "module": "gemini-ai:extractStructuredData",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 4326550
+            },
+            "mapper": {
+                "model": "gemini-2.5-flash",
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [
+                            {
+                                "type": "file",
+                                "file_data": {
+                                    "file_uri": "{{7.uri}}",
+                                    "mime_type": "{{7.mimeType}}"
+                                }
+                            },
+                            {
+                                "text": "Analiza el siguiente archivo PDF (una factura).\nExtrae la siguiente información en formato JSON con las claves: cliente, rut, fecha, folio, monto_total, forma_pago.\nDevuelve SOLO el JSON válido, sin texto adicional.",
+                                "type": "text"
+                            }
+                        ]
+                    }
+                ],
+                "responseSchema": [
+                    {
+                        "type": "string",
+                        "property_name": "cliente"
+                    },
+                    {
+                        "type": "string",
+                        "property_name": "rut"
+                    },
+                    {
+                        "type": "string",
+                        "property_name": "fecha"
+                    },
+                    {
+                        "type": "string",
+                        "property_name": "folio"
+                    },
+                    {
+                        "type": "number",
+                        "property_name": "monto_total"
+                    },
+                    {
+                        "type": "string",
+                        "property_name": "forma_pago"
+                    }
+                ],
+                "generationConfig": {
+                    "thinkingConfig": {}
+                }
+            },
+            "metadata": {
+                "designer": {
+                    "x": 995,
+                    "y": -61
+                },
+                "restore": {
+                    "expect": {
+                        "model": {
+                            "mode": "chose",
+                            "label": "Gemini 2.5 Flash"
+                        },
+                        "contents": {
+                            "mode": "chose",
+                            "items": [
+                                {
+                                    "role": {
+                                        "mode": "chose",
+                                        "label": "User"
+                                    },
+                                    "parts": {
+                                        "mode": "chose",
+                                        "items": [
+                                            {
+                                                "type": {
+                                                    "mode": "chose",
+                                                    "label": "File"
+                                                }
+                                            },
+                                            {
+                                                "type": {
+                                                    "mode": "chose",
+                                                    "label": "Text"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "responseSchema": {
+                            "mode": "chose",
+                            "items": [
+                                {
+                                    "type": {
+                                        "mode": "chose",
+                                        "label": "String",
+                                        "nested": [
+                                            {
+                                                "help": null,
+                                                "name": "property_name",
+                                                "spec": null,
+                                                "type": "text",
+                                                "label": "Property Name",
+                                                "options": null,
+                                                "required": true
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "description",
+                                                "spec": null,
+                                                "type": "text",
+                                                "label": "Description",
+                                                "options": null,
+                                                "required": false
+                                            },
+                                            {
+                                                "help": "The format is not being validated post generation. Add guidance in the prompt and/or property description.",
+                                                "name": "format",
+                                                "spec": null,
+                                                "type": "select",
+                                                "label": "Format",
+                                                "options": [
+                                                    {
+                                                        "label": "Date-Time",
+                                                        "value": "date-time"
+                                                    },
+                                                    {
+                                                        "label": "Date",
+                                                        "value": "date"
+                                                    },
+                                                    {
+                                                        "label": "Time",
+                                                        "value": "time"
+                                                    },
+                                                    {
+                                                        "label": "Email",
+                                                        "value": "email"
+                                                    },
+                                                    {
+                                                        "label": "Hostname",
+                                                        "value": "hostname"
+                                                    },
+                                                    {
+                                                        "label": "IPv4",
+                                                        "value": "ipv4"
+                                                    },
+                                                    {
+                                                        "label": "IPv6",
+                                                        "value": "ipv6"
+                                                    },
+                                                    {
+                                                        "label": "URI",
+                                                        "value": "uri"
+                                                    },
+                                                    {
+                                                        "label": "UUID",
+                                                        "value": "uuid"
+                                                    },
+                                                    {
+                                                        "label": "Regex",
+                                                        "value": "regex"
+                                                    }
+                                                ],
+                                                "required": null
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "required",
+                                                "spec": null,
+                                                "type": "boolean",
+                                                "label": "Required Property?",
+                                                "options": null,
+                                                "required": null
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "array",
+                                                "spec": null,
+                                                "type": "boolean",
+                                                "label": "Make property an array?",
+                                                "options": null,
+                                                "required": null
+                                            }
+                                        ]
+                                    },
+                                    "array": {
+                                        "mode": "chose"
+                                    },
+                                    "format": {
+                                        "mode": "chose",
+                                        "label": "Empty"
+                                    },
+                                    "required": {
+                                        "mode": "chose"
+                                    }
+                                },
+                                {
+                                    "type": {
+                                        "mode": "chose",
+                                        "label": "String",
+                                        "nested": [
+                                            {
+                                                "help": null,
+                                                "name": "property_name",
+                                                "spec": null,
+                                                "type": "text",
+                                                "label": "Property Name",
+                                                "options": null,
+                                                "required": true
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "description",
+                                                "spec": null,
+                                                "type": "text",
+                                                "label": "Description",
+                                                "options": null,
+                                                "required": false
+                                            },
+                                            {
+                                                "help": "The format is not being validated post generation. Add guidance in the prompt and/or property description.",
+                                                "name": "format",
+                                                "spec": null,
+                                                "type": "select",
+                                                "label": "Format",
+                                                "options": [
+                                                    {
+                                                        "label": "Date-Time",
+                                                        "value": "date-time"
+                                                    },
+                                                    {
+                                                        "label": "Date",
+                                                        "value": "date"
+                                                    },
+                                                    {
+                                                        "label": "Time",
+                                                        "value": "time"
+                                                    },
+                                                    {
+                                                        "label": "Email",
+                                                        "value": "email"
+                                                    },
+                                                    {
+                                                        "label": "Hostname",
+                                                        "value": "hostname"
+                                                    },
+                                                    {
+                                                        "label": "IPv4",
+                                                        "value": "ipv4"
+                                                    },
+                                                    {
+                                                        "label": "IPv6",
+                                                        "value": "ipv6"
+                                                    },
+                                                    {
+                                                        "label": "URI",
+                                                        "value": "uri"
+                                                    },
+                                                    {
+                                                        "label": "UUID",
+                                                        "value": "uuid"
+                                                    },
+                                                    {
+                                                        "label": "Regex",
+                                                        "value": "regex"
+                                                    }
+                                                ],
+                                                "required": null
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "required",
+                                                "spec": null,
+                                                "type": "boolean",
+                                                "label": "Required Property?",
+                                                "options": null,
+                                                "required": null
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "array",
+                                                "spec": null,
+                                                "type": "boolean",
+                                                "label": "Make property an array?",
+                                                "options": null,
+                                                "required": null
+                                            }
+                                        ]
+                                    },
+                                    "array": {
+                                        "mode": "chose"
+                                    },
+                                    "format": {
+                                        "mode": "chose",
+                                        "label": "Empty"
+                                    },
+                                    "required": {
+                                        "mode": "chose"
+                                    }
+                                },
+                                {
+                                    "type": {
+                                        "mode": "chose",
+                                        "label": "String",
+                                        "nested": [
+                                            {
+                                                "help": null,
+                                                "name": "property_name",
+                                                "spec": null,
+                                                "type": "text",
+                                                "label": "Property Name",
+                                                "options": null,
+                                                "required": true
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "description",
+                                                "spec": null,
+                                                "type": "text",
+                                                "label": "Description",
+                                                "options": null,
+                                                "required": false
+                                            },
+                                            {
+                                                "help": "The format is not being validated post generation. Add guidance in the prompt and/or property description.",
+                                                "name": "format",
+                                                "spec": null,
+                                                "type": "select",
+                                                "label": "Format",
+                                                "options": [
+                                                    {
+                                                        "label": "Date-Time",
+                                                        "value": "date-time"
+                                                    },
+                                                    {
+                                                        "label": "Date",
+                                                        "value": "date"
+                                                    },
+                                                    {
+                                                        "label": "Time",
+                                                        "value": "time"
+                                                    },
+                                                    {
+                                                        "label": "Email",
+                                                        "value": "email"
+                                                    },
+                                                    {
+                                                        "label": "Hostname",
+                                                        "value": "hostname"
+                                                    },
+                                                    {
+                                                        "label": "IPv4",
+                                                        "value": "ipv4"
+                                                    },
+                                                    {
+                                                        "label": "IPv6",
+                                                        "value": "ipv6"
+                                                    },
+                                                    {
+                                                        "label": "URI",
+                                                        "value": "uri"
+                                                    },
+                                                    {
+                                                        "label": "UUID",
+                                                        "value": "uuid"
+                                                    },
+                                                    {
+                                                        "label": "Regex",
+                                                        "value": "regex"
+                                                    }
+                                                ],
+                                                "required": null
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "required",
+                                                "spec": null,
+                                                "type": "boolean",
+                                                "label": "Required Property?",
+                                                "options": null,
+                                                "required": null
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "array",
+                                                "spec": null,
+                                                "type": "boolean",
+                                                "label": "Make property an array?",
+                                                "options": null,
+                                                "required": null
+                                            }
+                                        ]
+                                    },
+                                    "array": {
+                                        "mode": "chose"
+                                    },
+                                    "format": {
+                                        "mode": "chose",
+                                        "label": "Empty"
+                                    },
+                                    "required": {
+                                        "mode": "chose"
+                                    }
+                                },
+                                {
+                                    "type": {
+                                        "mode": "chose",
+                                        "label": "String",
+                                        "nested": [
+                                            {
+                                                "help": null,
+                                                "name": "property_name",
+                                                "spec": null,
+                                                "type": "text",
+                                                "label": "Property Name",
+                                                "options": null,
+                                                "required": true
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "description",
+                                                "spec": null,
+                                                "type": "text",
+                                                "label": "Description",
+                                                "options": null,
+                                                "required": false
+                                            },
+                                            {
+                                                "help": "The format is not being validated post generation. Add guidance in the prompt and/or property description.",
+                                                "name": "format",
+                                                "spec": null,
+                                                "type": "select",
+                                                "label": "Format",
+                                                "options": [
+                                                    {
+                                                        "label": "Date-Time",
+                                                        "value": "date-time"
+                                                    },
+                                                    {
+                                                        "label": "Date",
+                                                        "value": "date"
+                                                    },
+                                                    {
+                                                        "label": "Time",
+                                                        "value": "time"
+                                                    },
+                                                    {
+                                                        "label": "Email",
+                                                        "value": "email"
+                                                    },
+                                                    {
+                                                        "label": "Hostname",
+                                                        "value": "hostname"
+                                                    },
+                                                    {
+                                                        "label": "IPv4",
+                                                        "value": "ipv4"
+                                                    },
+                                                    {
+                                                        "label": "IPv6",
+                                                        "value": "ipv6"
+                                                    },
+                                                    {
+                                                        "label": "URI",
+                                                        "value": "uri"
+                                                    },
+                                                    {
+                                                        "label": "UUID",
+                                                        "value": "uuid"
+                                                    },
+                                                    {
+                                                        "label": "Regex",
+                                                        "value": "regex"
+                                                    }
+                                                ],
+                                                "required": null
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "required",
+                                                "spec": null,
+                                                "type": "boolean",
+                                                "label": "Required Property?",
+                                                "options": null,
+                                                "required": null
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "array",
+                                                "spec": null,
+                                                "type": "boolean",
+                                                "label": "Make property an array?",
+                                                "options": null,
+                                                "required": null
+                                            }
+                                        ]
+                                    },
+                                    "array": {
+                                        "mode": "chose"
+                                    },
+                                    "format": {
+                                        "mode": "chose",
+                                        "label": "Empty"
+                                    },
+                                    "required": {
+                                        "mode": "chose"
+                                    }
+                                },
+                                {
+                                    "type": {
+                                        "mode": "chose",
+                                        "label": "Number",
+                                        "nested": [
+                                            {
+                                                "help": null,
+                                                "name": "property_name",
+                                                "spec": null,
+                                                "type": "text",
+                                                "label": "Property Name",
+                                                "options": null,
+                                                "required": true
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "description",
+                                                "spec": null,
+                                                "type": "text",
+                                                "label": "Description",
+                                                "options": null,
+                                                "required": false
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "minimum",
+                                                "spec": null,
+                                                "type": "number",
+                                                "label": "Minimum Value",
+                                                "options": null,
+                                                "required": null
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "maximum",
+                                                "spec": null,
+                                                "type": "number",
+                                                "label": "Maximum Value",
+                                                "options": null,
+                                                "required": null
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "required",
+                                                "spec": null,
+                                                "type": "boolean",
+                                                "label": "Required Property?",
+                                                "options": null,
+                                                "required": null
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "array",
+                                                "spec": null,
+                                                "type": "boolean",
+                                                "label": "Make property an array?",
+                                                "options": null,
+                                                "required": null
+                                            }
+                                        ]
+                                    },
+                                    "array": {
+                                        "mode": "chose"
+                                    },
+                                    "required": {
+                                        "mode": "chose"
+                                    }
+                                },
+                                {
+                                    "type": {
+                                        "mode": "chose",
+                                        "label": "String",
+                                        "nested": [
+                                            {
+                                                "help": null,
+                                                "name": "property_name",
+                                                "spec": null,
+                                                "type": "text",
+                                                "label": "Property Name",
+                                                "options": null,
+                                                "required": true
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "description",
+                                                "spec": null,
+                                                "type": "text",
+                                                "label": "Description",
+                                                "options": null,
+                                                "required": false
+                                            },
+                                            {
+                                                "help": "The format is not being validated post generation. Add guidance in the prompt and/or property description.",
+                                                "name": "format",
+                                                "spec": null,
+                                                "type": "select",
+                                                "label": "Format",
+                                                "options": [
+                                                    {
+                                                        "label": "Date-Time",
+                                                        "value": "date-time"
+                                                    },
+                                                    {
+                                                        "label": "Date",
+                                                        "value": "date"
+                                                    },
+                                                    {
+                                                        "label": "Time",
+                                                        "value": "time"
+                                                    },
+                                                    {
+                                                        "label": "Email",
+                                                        "value": "email"
+                                                    },
+                                                    {
+                                                        "label": "Hostname",
+                                                        "value": "hostname"
+                                                    },
+                                                    {
+                                                        "label": "IPv4",
+                                                        "value": "ipv4"
+                                                    },
+                                                    {
+                                                        "label": "IPv6",
+                                                        "value": "ipv6"
+                                                    },
+                                                    {
+                                                        "label": "URI",
+                                                        "value": "uri"
+                                                    },
+                                                    {
+                                                        "label": "UUID",
+                                                        "value": "uuid"
+                                                    },
+                                                    {
+                                                        "label": "Regex",
+                                                        "value": "regex"
+                                                    }
+                                                ],
+                                                "required": null
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "required",
+                                                "spec": null,
+                                                "type": "boolean",
+                                                "label": "Required Property?",
+                                                "options": null,
+                                                "required": null
+                                            },
+                                            {
+                                                "help": null,
+                                                "name": "array",
+                                                "spec": null,
+                                                "type": "boolean",
+                                                "label": "Make property an array?",
+                                                "options": null,
+                                                "required": null
+                                            }
+                                        ]
+                                    },
+                                    "array": {
+                                        "mode": "chose"
+                                    },
+                                    "format": {
+                                        "mode": "chose",
+                                        "label": "Empty"
+                                    },
+                                    "required": {
+                                        "mode": "chose"
+                                    }
+                                }
+                            ]
+                        },
+                        "generationConfig": {
+                            "nested": {
+                                "thinkingConfig": {
+                                    "nested": {
+                                        "thinking_level": {
+                                            "mode": "chose",
+                                            "label": "Empty"
+                                        },
+                                        "include_thoughts": {
+                                            "mode": "chose"
+                                        }
+                                    }
+                                },
+                                "mediaResolution": {
+                                    "mode": "chose",
+                                    "label": "Empty"
+                                }
+                            },
+                            "collapsed": true
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "gemini-ai-q9zyjp"
+                            },
+                            "label": "gemini Make"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:gemini-ai-q9zyjp",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "model",
+                        "type": "select",
+                        "label": "AI Model",
+                        "required": true
+                    },
+                    {
+                        "name": "contents",
+                        "spec": [
+                            {
+                                "name": "role",
+                                "type": "select",
+                                "label": "Role",
+                                "options": [
+                                    {
+                                        "label": "User",
+                                        "value": "user"
+                                    },
+                                    {
+                                        "label": "Model",
+                                        "value": "model"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "parts",
+                                "spec": [
+                                    {
+                                        "name": "type",
+                                        "type": "select",
+                                        "label": "Message Type",
+                                        "options": [
+                                            {
+                                                "label": "Text",
+                                                "value": "text",
+                                                "nested": [
+                                                    {
+                                                        "name": "text",
+                                                        "type": "text",
+                                                        "label": "Text",
+                                                        "required": false
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "label": "File",
+                                                "value": "file",
+                                                "nested": [
+                                                    {
+                                                        "name": "file_data",
+                                                        "spec": [
+                                                            {
+                                                                "name": "mime_type",
+                                                                "type": "text",
+                                                                "label": "Mime Type",
+                                                                "required": false
+                                                            },
+                                                            {
+                                                                "help": "You get this from the 'Upload a File' module.",
+                                                                "name": "file_uri",
+                                                                "type": "text",
+                                                                "label": "File URI",
+                                                                "required": false
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "File Data",
+                                                        "required": false
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "thoughtSignature",
+                                        "type": "text",
+                                        "label": "Thought Signature"
+                                    }
+                                ],
+                                "type": "array",
+                                "label": "Parts"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Messages",
+                        "required": true
+                    },
+                    {
+                        "name": "responseSchema",
+                        "spec": [
+                            {
+                                "name": "type",
+                                "type": "select",
+                                "label": "Value Type",
+                                "options": [
+                                    {
+                                        "label": "String",
+                                        "value": "string",
+                                        "nested": "rpc://gemini-ai/1/createResponseSchema?type=string"
+                                    },
+                                    {
+                                        "label": "Enum",
+                                        "value": "enum",
+                                        "nested": "rpc://gemini-ai/1/createResponseSchema?type=enum"
+                                    },
+                                    {
+                                        "label": "Number",
+                                        "value": "number",
+                                        "nested": "rpc://gemini-ai/1/createResponseSchema?type=number"
+                                    },
+                                    {
+                                        "label": "Integer",
+                                        "value": "integer",
+                                        "nested": "rpc://gemini-ai/1/createResponseSchema?type=integer"
+                                    },
+                                    {
+                                        "label": "Boolean",
+                                        "value": "boolean",
+                                        "nested": "rpc://gemini-ai/1/createResponseSchema?type=boolean"
+                                    },
+                                    {
+                                        "label": "Object",
+                                        "value": "object",
+                                        "nested": "rpc://gemini-ai/1/createResponseSchema?type=object"
+                                    }
+                                ],
+                                "required": true
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Response Schema",
+                        "required": true
+                    },
+                    {
+                        "name": "generationConfig",
+                        "spec": [
+                            {
+                                "name": "thinkingConfig",
+                                "spec": [
+                                    {
+                                        "name": "thinkingBudget",
+                                        "type": "number",
+                                        "label": "Thinking Budget"
+                                    },
+                                    {
+                                        "name": "include_thoughts",
+                                        "type": "boolean",
+                                        "label": "Include Thoughts"
+                                    },
+                                    {
+                                        "name": "thinking_level",
+                                        "type": "select",
+                                        "label": "Thinking Level",
+                                        "validate": {
+                                            "enum": [
+                                                "low",
+                                                "high"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Thinking Config"
+                            },
+                            {
+                                "name": "mediaResolution",
+                                "type": "select",
+                                "label": "Media Resolution",
+                                "validate": {
+                                    "enum": [
+                                        "media_resolution_low",
+                                        "media_resolution_medium",
+                                        "media_resolution_high"
+                                    ]
+                                }
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Generation configurations"
+                    }
+                ],
+                "advanced": true
+            }
+        },
+        {
+            "id": 9,
+            "module": "google-sheets:addRow",
+            "version": 2,
+            "parameters": {
+                "__IMTCONN__": 4326199
+            },
+            "mapper": {
+                "from": "drive",
+                "mode": "select",
+                "values": {
+                    "0": "{{8.result.cliente}}",
+                    "1": "{{8.result.rut}}",
+                    "2": "{{8.result.fecha}}",
+                    "3": "{{8.result.monto_total}}",
+                    "4": "{{8.result.forma_pago}}"
+                },
+                "sheetId": "Hoja 1",
+                "spreadsheetId": "/16Fq39tgpFI_MS9pbsEL-POFy5z-ooyuW/1eod9uf9jIjmMnNQI9Fqjbs_TXMg0zlW4RgzcyY8qOhc",
+                "includesHeaders": true,
+                "insertDataOption": "INSERT_ROWS",
+                "valueInputOption": "USER_ENTERED",
+                "insertUnformatted": false
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1331,
+                    "y": -56
+                },
+                "restore": {
+                    "expect": {
+                        "from": {
+                            "label": "My Drive"
+                        },
+                        "mode": {
+                            "label": "Search by path"
+                        },
+                        "sheetId": {
+                            "label": "Hoja 1"
+                        },
+                        "spreadsheetId": {
+                            "path": [
+                                "Facturas Almacenadas",
+                                "Facturas Excel"
+                            ]
+                        },
+                        "includesHeaders": {
+                            "label": "Yes",
+                            "nested": [
+                                {
+                                    "name": "values",
+                                    "spec": [
+                                        {
+                                            "name": "0",
+                                            "type": "text",
+                                            "label": "Cliente (A)"
+                                        },
+                                        {
+                                            "name": "1",
+                                            "type": "text",
+                                            "label": "Rut (B)"
+                                        },
+                                        {
+                                            "name": "2",
+                                            "type": "text",
+                                            "label": "Fecha (C)"
+                                        },
+                                        {
+                                            "name": "3",
+                                            "type": "text",
+                                            "label": "Monto Total (D)"
+                                        },
+                                        {
+                                            "name": "4",
+                                            "type": "text",
+                                            "label": "Forma Pago (E)"
+                                        },
+                                        {
+                                            "name": "5",
+                                            "type": "text",
+                                            "label": "(F)"
+                                        },
+                                        {
+                                            "name": "6",
+                                            "type": "text",
+                                            "label": "(G)"
+                                        },
+                                        {
+                                            "name": "7",
+                                            "type": "text",
+                                            "label": "(H)"
+                                        },
+                                        {
+                                            "name": "8",
+                                            "type": "text",
+                                            "label": "(I)"
+                                        },
+                                        {
+                                            "name": "9",
+                                            "type": "text",
+                                            "label": "(J)"
+                                        },
+                                        {
+                                            "name": "10",
+                                            "type": "text",
+                                            "label": "(K)"
+                                        },
+                                        {
+                                            "name": "11",
+                                            "type": "text",
+                                            "label": "(L)"
+                                        },
+                                        {
+                                            "name": "12",
+                                            "type": "text",
+                                            "label": "(M)"
+                                        },
+                                        {
+                                            "name": "13",
+                                            "type": "text",
+                                            "label": "(N)"
+                                        },
+                                        {
+                                            "name": "14",
+                                            "type": "text",
+                                            "label": "(O)"
+                                        },
+                                        {
+                                            "name": "15",
+                                            "type": "text",
+                                            "label": "(P)"
+                                        },
+                                        {
+                                            "name": "16",
+                                            "type": "text",
+                                            "label": "(Q)"
+                                        },
+                                        {
+                                            "name": "17",
+                                            "type": "text",
+                                            "label": "(R)"
+                                        },
+                                        {
+                                            "name": "18",
+                                            "type": "text",
+                                            "label": "(S)"
+                                        },
+                                        {
+                                            "name": "19",
+                                            "type": "text",
+                                            "label": "(T)"
+                                        },
+                                        {
+                                            "name": "20",
+                                            "type": "text",
+                                            "label": "(U)"
+                                        },
+                                        {
+                                            "name": "21",
+                                            "type": "text",
+                                            "label": "(V)"
+                                        },
+                                        {
+                                            "name": "22",
+                                            "type": "text",
+                                            "label": "(W)"
+                                        },
+                                        {
+                                            "name": "23",
+                                            "type": "text",
+                                            "label": "(X)"
+                                        },
+                                        {
+                                            "name": "24",
+                                            "type": "text",
+                                            "label": "(Y)"
+                                        },
+                                        {
+                                            "name": "25",
+                                            "type": "text",
+                                            "label": "(Z)"
+                                        }
+                                    ],
+                                    "type": "collection",
+                                    "label": "Values"
+                                }
+                            ]
+                        },
+                        "insertDataOption": {
+                            "mode": "chose",
+                            "label": "Insert rows"
+                        },
+                        "valueInputOption": {
+                            "mode": "chose",
+                            "label": "User entered"
+                        },
+                        "insertUnformatted": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google"
+                            },
+                            "label": "My Google connection (dellacroce.pd@gmail.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "mode",
+                        "type": "select",
+                        "label": "Search Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "select",
+                                "fromAll",
+                                "map"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "insertUnformatted",
+                        "type": "boolean",
+                        "label": "Unformatted",
+                        "required": true
+                    },
+                    {
+                        "name": "valueInputOption",
+                        "type": "select",
+                        "label": "Value input option",
+                        "validate": {
+                            "enum": [
+                                "USER_ENTERED",
+                                "RAW"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "insertDataOption",
+                        "type": "select",
+                        "label": "Insert data option",
+                        "validate": {
+                            "enum": [
+                                "INSERT_ROWS",
+                                "OVERWRITE"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "type": "select",
+                        "label": "Drive",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share",
+                                "team"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "spreadsheetId",
+                        "type": "file",
+                        "label": "Spreadsheet ID",
+                        "required": true
+                    },
+                    {
+                        "name": "sheetId",
+                        "type": "select",
+                        "label": "Sheet Name",
+                        "required": true
+                    },
+                    {
+                        "name": "includesHeaders",
+                        "type": "select",
+                        "label": "Table contains headers",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                true,
+                                false
+                            ]
+                        }
+                    },
+                    {
+                        "name": "values",
+                        "spec": [
+                            {
+                                "name": "0",
+                                "type": "text",
+                                "label": "Cliente (A)"
+                            },
+                            {
+                                "name": "1",
+                                "type": "text",
+                                "label": "Rut (B)"
+                            },
+                            {
+                                "name": "2",
+                                "type": "text",
+                                "label": "Fecha (C)"
+                            },
+                            {
+                                "name": "3",
+                                "type": "text",
+                                "label": "Monto Total (D)"
+                            },
+                            {
+                                "name": "4",
+                                "type": "text",
+                                "label": "Forma Pago (E)"
+                            },
+                            {
+                                "name": "5",
+                                "type": "text",
+                                "label": "(F)"
+                            },
+                            {
+                                "name": "6",
+                                "type": "text",
+                                "label": "(G)"
+                            },
+                            {
+                                "name": "7",
+                                "type": "text",
+                                "label": "(H)"
+                            },
+                            {
+                                "name": "8",
+                                "type": "text",
+                                "label": "(I)"
+                            },
+                            {
+                                "name": "9",
+                                "type": "text",
+                                "label": "(J)"
+                            },
+                            {
+                                "name": "10",
+                                "type": "text",
+                                "label": "(K)"
+                            },
+                            {
+                                "name": "11",
+                                "type": "text",
+                                "label": "(L)"
+                            },
+                            {
+                                "name": "12",
+                                "type": "text",
+                                "label": "(M)"
+                            },
+                            {
+                                "name": "13",
+                                "type": "text",
+                                "label": "(N)"
+                            },
+                            {
+                                "name": "14",
+                                "type": "text",
+                                "label": "(O)"
+                            },
+                            {
+                                "name": "15",
+                                "type": "text",
+                                "label": "(P)"
+                            },
+                            {
+                                "name": "16",
+                                "type": "text",
+                                "label": "(Q)"
+                            },
+                            {
+                                "name": "17",
+                                "type": "text",
+                                "label": "(R)"
+                            },
+                            {
+                                "name": "18",
+                                "type": "text",
+                                "label": "(S)"
+                            },
+                            {
+                                "name": "19",
+                                "type": "text",
+                                "label": "(T)"
+                            },
+                            {
+                                "name": "20",
+                                "type": "text",
+                                "label": "(U)"
+                            },
+                            {
+                                "name": "21",
+                                "type": "text",
+                                "label": "(V)"
+                            },
+                            {
+                                "name": "22",
+                                "type": "text",
+                                "label": "(W)"
+                            },
+                            {
+                                "name": "23",
+                                "type": "text",
+                                "label": "(X)"
+                            },
+                            {
+                                "name": "24",
+                                "type": "text",
+                                "label": "(Y)"
+                            },
+                            {
+                                "name": "25",
+                                "type": "text",
+                                "label": "(Z)"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Values"
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu1.make.com",
+        "notes": []
+    }
+}
