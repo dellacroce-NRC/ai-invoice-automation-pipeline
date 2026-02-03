@@ -1,4 +1,3 @@
-
 #AI-Powered Invoice Processing Automation: From Unstructured PDF to Google Sheets
 
 🚀 Executive Summary
