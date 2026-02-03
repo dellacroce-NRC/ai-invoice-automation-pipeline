@@ -1,63 +1,61 @@
-AI-Powered Invoice Processing Automation: From Unstructured PDF to Google Sheets
+Automated Sales Reporting & Data Validation Pipeline
 
 🚀 Executive Summary
 
-Manual data entry for financial documents is a high-cost operational bottleneck prone to human error. I developed an end-to-end automated pipeline that leverages Generative AI (Gemini 1.5 Flash) to monitor incoming emails, parse unstructured PDF invoices, and log key metadata directly into a structured Google Sheets database in real-time.
+Manual data entry in CRM systems often leads to naming inconsistencies that compromise financial reporting accuracy. I developed a Python-based pipeline that resolves these entity errors using Fuzzy String Matching and automates the generation of executive-level performance reports in PDF format.
 
 📈 Estimated Business Impact:
 
-Operational Efficiency: Reduces administrative manual entry time by ~10-15 hours/month (based on a volume of 150+ monthly invoices).
+Efficiency: Automated the reconciliation of transactional data, reducing manual data cleaning time by ~5-8 hours per reporting cycle.
 
-Zero-Touch Invoicing: 100% automation from email reception to final spreadsheet logging.
+Accuracy: Reached 100% data integrity by implementing a dual-layer validation (algorithmic matching + manual QC flagging).
 
-Data Integrity: Eliminates transcription errors in RUT and total amounts by using AI-driven structured extraction.
+🛡️ Data Quality Spotlight: Entity Resolution (Before & After)
 
-🛠️ Technical Stack
+The core value of this project is the transformation of "dirty" manual entries into standardized, joinable data. Using the Levenshtein Distance algorithm, the script reconciles high-variance strings with a master representative list:
 
-Orchestrator: Make.com (Workflow automation).
+Raw Input (Manual Entry)
 
-AI Engine: Google Gemini AI (LLM) for high-accuracy OCR and entity extraction.
+Resolved Entity (Master List)
 
-Cloud Integrations: Google Workspace (Gmail & Sheets API).
+Match Confidence
 
-🔄 The Logical Workflow
+"Gogle"
 
-Trigger: Watches Gmail for new messages with the subject "factura" and PDF attachments.
+"Google"
 
-AI Processing Layer: Extracts binary data from the PDF and sends it to Gemini AI.
+80%+
 
-Intermediate Extraction: A custom prompt forces the LLM to convert the visual document into a structured JSON object.
+"Micro-soft"
 
-Final Data Persistence: The automation parses the JSON and appends each field as a new row in a master Google Sheet (Single Source of Truth).
+"Microsoft"
 
-🛡️ Data Transformation Showcase
+90%+
 
-The pipeline bridges the gap between unstructured documents and clean databases:
+"Amzon Corp"
 
-1. Input (Unstructured PDF): A messy invoice file with varying layouts and fonts.
+"Amazon"
 
-2. Intermediate Processing (The AI Logic):
-The script extracts a reliable JSON schema:
+85%+
 
-{
-  "cliente": "Nombre Empresa S.A.",
-  "rut": "76.xxx.xxx-k",
-  "fecha": "2024-05-20",
-  "monto_total": 150500
-}
+"Unkown_Vendor"
 
+NULL
 
-3. Final Output (Google Sheets):
-A clean, formatted row ready for accounting analysis, including: Client Name, Tax ID (RUT), Date, Total Amount, and Payment Method.
+Flagged for Review
 
-🧠 Prompt Engineering Highlight
+Analyst Insight: To guarantee 100% accuracy, I implemented a 30% similarity threshold. Any record falling below this score is automatically diverted to registros_sin_cruce.csv for manual validation, preventing false positives in executive KPIs.
 
-The reliability of this automation rests on Precision Prompting. I designed the instructions to ensure 100% JSON validity, which is essential for the data to be successfully mapped into Google Sheets:
+🛠️ Technical Implementation
 
-"Analyze the following PDF file (invoice). Extract the following information in JSON format with the keys: client, tax_id, date, invoice_number, total_amount, payment_method. Return ONLY valid JSON, no additional text."
+Fuzzy Logic Layer: Utilized the thefuzz library to calculate similarity scores between transactional data and the representative database.
 
-📈 Key Outcomes
+Data Aggregation: Executed complex joins and grouping logic with pandas to calculate performance metrics (Sales by Representative and Client).
 
-Scalability: The architecture is model-agnostic and can be adapted to process contracts, receipts, or shipping IDs.
+Automated PDF Assembly: Developed a reporting engine using FPDF that programmatically inserts tables, timestamps, and visualizations.
 
-Real-time Visibility: Stakeholders can access updated financial data the moment an email arrives.
+📊 Key Outcomes
+
+Data-Driven Decisions: Stakeholders receive a standardized PDF report with automated Matplotlib visualizations, eliminating the need for manual spreadsheet manipulation.
+
+Scalability: The pipeline can handle thousands of rows of inconsistent data, maintaining performance where manual auditing would fail.
