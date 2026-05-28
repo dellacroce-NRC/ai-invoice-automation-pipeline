@@ -44,6 +44,12 @@ Append validated fields into Google Sheets
 Create a simple operational record for review and reporting
 ```
 
+## Workflow Preview
+
+The image below shows the Make scenario used in the prototype. The automation watches Gmail for invoice-related messages, retrieves the attachment, sends the document through Gemini for structured extraction, and appends the resulting fields into Google Sheets.
+
+![Make invoice automation workflow](image.png)
+
 ## What The Automation Extracts
 
 The workflow is designed to extract fields such as:
