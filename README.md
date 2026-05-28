@@ -48,7 +48,7 @@ Create a simple operational record for review and reporting
 
 The image below shows the Make scenario used in the prototype. The automation watches Gmail for invoice-related messages, retrieves the attachment, sends the document through Gemini for structured extraction, and appends the resulting fields into Google Sheets.
 
-![Make invoice automation workflow](image.png)
+![Make invoice automation workflow](https://raw.githubusercontent.com/dellacroce-NRC/ai-invoice-automation-pipeline/b6e9816c6eedeb3435261428820d5363158aefe6/image.png)
 
 ## What The Automation Extracts
 
